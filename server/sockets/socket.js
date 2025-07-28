@@ -7,7 +7,10 @@ let activityLog = [];
 function setupSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: "https://realtime-chat-r1yy.onrender.com",
+      origin: [
+      "http://localhost:5173",
+      "https://realtime-chat-r1yy.onrender.com"
+    ],
       methods: ["GET", "POST"],
     },
   });
