@@ -9,7 +9,8 @@ function setupSocket(server) {
     cors: {
       origin: [
       "http://localhost:5173",
-      "https://realtime-chat-r1yy.onrender.com"
+      "https://realtime-chat-r1yy.onrender.com",
+        "https://realtime-chat-five-omega.vercel.app"
     ],
       methods: ["GET", "POST"],
     },
