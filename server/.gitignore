@@ -1,0 +1,52 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Runtime files
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage files
+coverage/
+*.lcov
+
+# Build files
+dist/
+build/
+
+# Editor specific
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Temporary files
+*.swp
+*.tmp
+*.bak
+
+# Database dumps
+dump*.sql
+*.sqlite
+
+# PM2 logs
+.pids/
+*.log
+
+# Optional: ignore uploads folder (if storing user files locally)
+uploads/

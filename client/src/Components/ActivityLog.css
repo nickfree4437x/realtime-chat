@@ -1,0 +1,158 @@
+.activity-log {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  height: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: #4361ee;
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.count {
+  background: rgba(255,255,255,0.2);
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.log-container {
+  padding: 8px;
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: 300px;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.empty p {
+  margin: 0 0 5px 0;
+}
+
+.empty small {
+  font-size: 0.8rem;
+}
+
+.log-item {
+  display: flex;
+  padding: 8px;
+  margin-bottom: 6px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.icon-container {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  padding: 6px;
+  border-radius: 50%;
+  color: white;
+  font-size: 12px;
+}
+
+.icon.join { background: #4bb543; }
+.icon.leave { background: #ff3333; }
+.icon.message { background: #4361ee; }
+.icon.edit { background: #ffc107; }
+.icon.delete { background: #dc3545; }
+.icon.reply { background: #17a2b8; }
+.icon.default { background: #6c757d; }
+
+.content {
+  flex-grow: 1;
+}
+
+.content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.content strong {
+  font-weight: 500;
+}
+
+.message-preview {
+  margin: 5px 0;
+  padding: 5px;
+  background: rgba(0,0,0,0.03);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.message-content {
+  color: #495057;
+  display: block;
+}
+
+.deleted-message {
+  color: #dc3545;
+  font-style: italic;
+}
+
+.old-message {
+  display: block;
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 3px;
+  text-decoration: line-through;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  margin-top: 3px;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.clock-icon {
+  margin-right: 4px;
+  font-size: 10px;
+}
+
+/* Scrollbar styling */
+.log-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.log-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.log-container::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
