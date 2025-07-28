@@ -53,7 +53,7 @@ const Chat = () => {
   // Fetch public rooms
   const fetchPublicRooms = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/rooms/public");
+      const res = await fetch("https://realtime-chat-r1yy.onrender.com/api/rooms/public");
       const data = await res.json();
       if (res.ok) setPublicRooms(data.rooms || []);
     } catch (err) {
