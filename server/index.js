@@ -13,8 +13,24 @@ connectDB();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// ----------------------------
+// 🔥 EXPRESS CORS SETUP (VERY IMPORTANT)
+// ----------------------------
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000",
+
+    // ⭐ Your FRONTEND (Vercel)
+    "https://realtime-chat-beta-eight.vercel.app",
+
+    // ⭐ Your BACKEND URL (Render)
+    "https://realtime-chat-zb4l.onrender.com"
+  ],
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Create HTTP server
@@ -29,7 +45,7 @@ const io = setupSocket(server);
 app.set("io", io);
 
 app.use((req, res, next) => {
-  req.io = io; // <-- VERY IMPORTANT
+  req.io = io;
   next();
 });
 
