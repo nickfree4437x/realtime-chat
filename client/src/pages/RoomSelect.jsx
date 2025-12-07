@@ -17,7 +17,7 @@ const SelectRoom = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/rooms/public");
+        const res = await fetch(" https://realtime-chat-zb4l.onrender.com/api/rooms/public");
         const data = await res.json();
         if (res.ok) {
           setPublicRooms(data.rooms || []);
@@ -45,7 +45,7 @@ const SelectRoom = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/rooms/join", {
+      const response = await fetch(" https://realtime-chat-zb4l.onrender.com/api/rooms/join", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
