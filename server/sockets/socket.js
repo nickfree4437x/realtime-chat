@@ -8,24 +8,32 @@ function setupSocket(server) {
   const io = new Server(server, {
     cors: {
       origin: [
-      "http://localhost:5173",
-      "https://realtime-chat-r1yy.onrender.com",
-        "https://realtime-chat-five-omega.vercel.app"
-    ],
+        // ⭐ LOCAL DEVELOPMENT
+        "http://localhost:5173",
+        "http://localhost:3000",
+
+        // ⭐ YOUR FRONTEND (VERCEL)
+        "https://realtime-chat-beta-eight.vercel.app",
+
+        // ⭐ YOUR BACKEND (RENDER)
+        "https://realtime-chat-zb4l.onrender.com"
+      ],
       methods: ["GET", "POST"],
+      credentials: true
     },
   });
 
   io.on("connection", (socket) => {
     console.log("✅ User connected:", socket.id);
 
-    // Existing joinRoom handler
+    // -------------------------
+    // JOIN ROOM
+    // -------------------------
     socket.on("joinRoom", async ({ username, room }) => {
       socket.join(room);
       socket.username = username;
       socket.room = room;
 
-      // Get both regular and pinned messages
       const [history, pinnedMessages] = await Promise.all([
         Message.find({ room, pinned: false })
           .sort({ timestamp: 1 })
@@ -50,11 +58,11 @@ function setupSocket(server) {
       };
       activityLog.push(joinLog);
       io.to(room).emit("activityLog", joinLog);
-
-      console.log(`${username} joined room ${room}`);
     });
 
-    // Existing chatMessage handler
+    // -------------------------
+    // CHAT MESSAGE
+    // -------------------------
     socket.on("chatMessage", async ({ username, room, message, replyTo = null }) => {
       try {
         const deliveredTo = (onlineUsers[room] || []).filter((u) => u !== username);
@@ -70,7 +78,7 @@ function setupSocket(server) {
 
         io.to(room).emit("chatMessage", {
           ...newMessage.toObject(),
-          reactions: new Map() // Initialize empty reactions map
+          reactions: new Map(),
         });
 
         socket.emit("messageDelivered", {
@@ -92,7 +100,9 @@ function setupSocket(server) {
       }
     });
 
-    // New reaction handlers
+    // -------------------------
+    // REACTIONS
+    // -------------------------
     socket.on("addReaction", async ({ messageId, emoji, username, room }) => {
       try {
         const updated = await Message.findByIdAndUpdate(
@@ -100,12 +110,12 @@ function setupSocket(server) {
           { $addToSet: { [`reactions.${emoji}`]: username } },
           { new: true }
         );
-        
+
         io.to(room).emit("reactionAdded", {
           messageId,
           emoji,
           username,
-          reactions: updated.reactions
+          reactions: updated.reactions,
         });
       } catch (err) {
         console.error("❌ Error adding reaction:", err);
@@ -119,19 +129,21 @@ function setupSocket(server) {
           { $pull: { [`reactions.${emoji}`]: username } },
           { new: true }
         );
-        
+
         io.to(room).emit("reactionRemoved", {
           messageId,
           emoji,
           username,
-          reactions: updated.reactions
+          reactions: updated.reactions,
         });
       } catch (err) {
         console.error("❌ Error removing reaction:", err);
       }
     });
 
-    // New pin message handler
+    // -------------------------
+    // PIN MESSAGE
+    // -------------------------
     socket.on("togglePin", async ({ messageId, room }) => {
       try {
         const msg = await Message.findById(messageId);
@@ -142,39 +154,44 @@ function setupSocket(server) {
 
         io.to(room).emit("messagePinned", {
           messageId,
-          pinned: msg.pinned
+          pinned: msg.pinned,
         });
-
-        console.log(`📌 Message ${messageId} ${msg.pinned ? 'pinned' : 'unpinned'}`);
       } catch (err) {
         console.error("❌ Error toggling pin:", err);
       }
     });
 
-    // New search handler
+    // -------------------------
+    // SEARCH MESSAGES
+    // -------------------------
     socket.on("searchMessages", async ({ room, query }) => {
       try {
         const results = await Message.find({
           room,
-          $text: { $search: query }
+          $text: { $search: query },
         })
-        .sort({ score: { $meta: "textScore" } })
-        .limit(20);
+          .sort({ score: { $meta: "textScore" } })
+          .limit(20);
 
-        socket.emit("searchResults", results.map(msg => ({
-          _id: msg._id,
-          username: msg.username,
-          message: msg.message,
-          timestamp: msg.timestamp,
-          pinned: msg.pinned
-        })));
+        socket.emit(
+          "searchResults",
+          results.map((msg) => ({
+            _id: msg._id,
+            username: msg.username,
+            message: msg.message,
+            timestamp: msg.timestamp,
+            pinned: msg.pinned,
+          }))
+        );
       } catch (err) {
         console.error("❌ Error searching messages:", err);
         socket.emit("searchResults", []);
       }
     });
 
-    // Existing messageSeen handler
+    // -------------------------
+    // SEEN STATUS
+    // -------------------------
     socket.on("messageSeen", async ({ username, room }) => {
       try {
         const unseenMessages = await Message.find({
@@ -192,15 +209,16 @@ function setupSocket(server) {
         const updatedMessages = await Message.find({ room })
           .sort({ timestamp: 1 })
           .limit(50);
-        io.to(room).emit("chatHistory", updatedMessages);
 
-        console.log(`✅ Seen updated for ${unseenMessages.length} messages by ${username}`);
+        io.to(room).emit("chatHistory", updatedMessages);
       } catch (error) {
         console.error("❌ Error updating seenBy:", error);
       }
     });
 
-    // Existing typing handlers
+    // -------------------------
+    // TYPING INDICATOR
+    // -------------------------
     socket.on("typing", ({ room, username }) => {
       socket.broadcast.to(room).emit("userTyping", { username });
       if (socket.typingTimeout) clearTimeout(socket.typingTimeout);
@@ -214,7 +232,9 @@ function setupSocket(server) {
       socket.broadcast.to(room).emit("userStoppedTyping", { username });
     });
 
-    // Existing edit handler
+    // -------------------------
+    // EDIT MESSAGE
+    // -------------------------
     socket.on("editMessage", async ({ messageId, newContent, username, room }) => {
       try {
         const msg = await Message.findById(messageId);
@@ -225,7 +245,7 @@ function setupSocket(server) {
           io.to(room).emit("messageEdited", {
             _id: msg._id,
             message: newContent,
-            edited: true
+            edited: true,
           });
         }
       } catch (err) {
@@ -233,7 +253,9 @@ function setupSocket(server) {
       }
     });
 
-    // Existing delete handler
+    // -------------------------
+    // DELETE MESSAGE
+    // -------------------------
     socket.on("deleteMessage", async ({ messageId, username, room }) => {
       try {
         const msg = await Message.findById(messageId);
@@ -246,7 +268,9 @@ function setupSocket(server) {
       }
     });
 
-    // Existing disconnect handler
+    // -------------------------
+    // DISCONNECT
+    // -------------------------
     socket.on("disconnect", () => {
       const { username, room } = socket;
       if (room && username) {
