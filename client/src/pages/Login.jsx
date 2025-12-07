@@ -64,7 +64,7 @@ const Login = () => {
     setMessage({ text: '', type: '' });
 
     try {
-      const res = await axios.post('https://realtime-chat-r1yy.onrender.com/api/auth/login', formData);
+      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
       setMessage({ 
         text: 'Login successful! Redirecting...', 
         type: 'success' 

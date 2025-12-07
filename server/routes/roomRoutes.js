@@ -5,10 +5,9 @@ const {
   getPublicRooms,
 } = require("../controllers/roomController");
 
-// Join or create a room with Socket.io support
+// Join or create a room
 router.post("/join", (req, res) => {
-  const io = req.app.get("io"); // Get io instance
-  joinOrCreateRoom(req, res, io); // Pass io to controller
+  joinOrCreateRoom(req, res);  // req.io auto-available
 });
 
 // Get all public rooms

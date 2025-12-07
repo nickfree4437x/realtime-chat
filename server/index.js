@@ -5,7 +5,7 @@ const http = require("http");
 const connectDB = require('./config/db');
 
 const authRoutes = require('./routes/auth');
-const room = require('./routes/roomRoutes');
+const roomRoutes = require('./routes/roomRoutes');
 const setupSocket = require("./sockets/socket");
 
 dotenv.config();
@@ -20,19 +20,33 @@ app.use(express.json());
 // Create HTTP server
 const server = http.createServer(app);
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/rooms', room);
+// ----------------------------
+// 🔥 Initialize Socket.IO
+// ----------------------------
+const io = setupSocket(server);
 
-// Sample API
+// 🔥 Make io available inside Express
+app.set("io", io);
+
+app.use((req, res, next) => {
+  req.io = io; // <-- VERY IMPORTANT
+  next();
+});
+
+// ----------------------------
+// Routes
+// ----------------------------
+app.use('/api/auth', authRoutes);
+app.use('/api/rooms', roomRoutes);
+
+// Test API
 app.get('/', (req, res) => {
   res.send('API is working ✅');
 });
 
-// Setup socket
-setupSocket(server);
-
-// Listen on server (FIXED)
+// ----------------------------
+// Start Server
+// ----------------------------
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
